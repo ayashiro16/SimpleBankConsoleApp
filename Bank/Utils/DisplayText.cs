@@ -26,6 +26,11 @@ public static class DisplayText
         Console.Write($"Please enter your {firstOrLast} name: ");
     }
 
+    public static void EnterDollarAmount()
+    {
+        Console.Write("Please enter a dollar amount: ");
+    }
+
     public static void InvalidName()
     {
         Console.WriteLine("Invalid name. Letters only, please.");
@@ -49,5 +54,25 @@ public static class DisplayText
     public static void InvalidMenuChoice()
     {
         Console.WriteLine("Invalid menu selection.");
+    }
+
+    public static void EnterAccountId()
+    {
+        Console.WriteLine("Please enter your ID: ");
+    }
+
+    public static void InvalidAccountId()
+    {
+        Console.WriteLine("Could not find account.");
+    }
+
+    public static void Failure()
+    {
+        Console.WriteLine("Could not complete task.");
+    }
+
+    public static void Success()
+    {
+        Console.WriteLine("Task successfully completed.");
     }
 }
