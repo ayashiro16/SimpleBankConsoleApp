@@ -18,7 +18,7 @@ public class AccountController
             FirstName = first,
             LastName = last,
             Balance = balance,
-            Id = new Guid()
+            Id = Guid.NewGuid()
         };
         id = account.Id;
         return new AccountController(account);
