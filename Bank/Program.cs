@@ -1,6 +1,7 @@
 ﻿// See https://aka.ms/new-console-template for more information
 
 using System.Net.Mime;
+using System.Runtime.CompilerServices;
 using SimpleBankConsoleApp.Controllers;
 using SimpleBankConsoleApp.Utils;
 
@@ -105,17 +106,84 @@ void MakeDeposit()
 
 void Withdraw()
 {
-    
+    if (!GetAccountId(out Guid id))
+    {
+        DisplayText.InvalidAccountId();
+        return;
+    }
+
+    decimal amount = GetMoneyAmount();
+    try
+    {
+        decimal currBalance = bank.RetrieveAccount(id).CheckBalance();
+        if (amount > currBalance)
+        {
+            DisplayText.Failure();
+            return;
+        }
+
+        bank.RetrieveAccount(id).Withdraw(amount);
+    }
+    catch
+    {
+        DisplayText.Failure();
+        return;
+    }
+    DisplayText.Success();
 }
 
 void CheckBalance()
 {
-    
+    if (!GetAccountId(out Guid id))
+    {
+        DisplayText.InvalidAccountId();
+        return;
+    }
+
+    try
+    {
+        DisplayText.Balance(bank.RetrieveAccount(id).CheckBalance());
+    }
+    catch
+    {
+        DisplayText.Failure();
+        return;
+    }
 }
 
 void TransferFunds()
 {
-    
+    Console.WriteLine("TRANSFER FROM");
+    if (!GetAccountId(out Guid id1))
+    {
+        DisplayText.InvalidAccountId();
+        return;
+    }
+    Console.WriteLine("TRANSFER TO");
+    if (!GetAccountId(out Guid id2))
+    {
+        DisplayText.InvalidAccountId();
+        return;
+    }
+    decimal amount = GetMoneyAmount();
+    try
+    {
+        decimal currBalance = bank.RetrieveAccount(id1).CheckBalance();
+        if (amount > currBalance)
+        {
+            DisplayText.Failure();
+            return;
+        }
+
+        bank.RetrieveAccount(id1).Withdraw(amount);
+        bank.RetrieveAccount(id2).MakeDeposit(amount);
+    }
+    catch
+    {
+        DisplayText.Failure();
+        return;
+    }
+    DisplayText.Success();
 }
 
 string GetName(string firstOrLast)
@@ -169,15 +237,13 @@ string GetMenuSelection()
 
 decimal GetMoneyAmount()
 {
-    decimal amount;
     DisplayText.EnterDollarAmount();
     string? input = Console.ReadLine();
-    while (!Decimal.TryParse(input, out amount))
+    while (!Decimal.TryParse(input, out _))
     {
         DisplayText.InvalidAmount();
         DisplayText.EnterDollarAmount();
         input = Console.ReadLine();
     }
-
     return Decimal.Parse(input);
 }
