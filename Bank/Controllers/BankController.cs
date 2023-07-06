@@ -14,15 +14,15 @@ public class BankController : Singleton<BankModel>
         return newId;
     }
 
-    public AccountController? RetrieveAccount(Guid id)
+    public AccountController RetrieveAccount(Guid id)
     {
-        Bank.Accounts.TryGetValue(id, out AccountController? account);
+        Bank.Accounts.TryGetValue(id, out AccountController account);
         return account;
     }
 
-    public AccountController? DeleteAccount(Guid id)
+    public AccountController DeleteAccount(Guid id)
     {
-        if (Bank.Accounts.TryGetValue(id, out AccountController? account))
+        if (Bank.Accounts.TryGetValue(id, out AccountController account))
         {
             Bank.Accounts.Remove(id);
         }
