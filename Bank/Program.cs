@@ -68,6 +68,7 @@ void MainMenu()
                 TransferFunds();
                 break;
             case "6":
+                DisplayText.Exit();
                 break;
         }
     } while (selection != "6");
@@ -204,13 +205,12 @@ decimal GetStartingBalance()
     decimal amount;
     DisplayText.StartingBalance();
     string? input = Console.ReadLine();
-    while (!Decimal.TryParse(input, out amount))
+    while (!Decimal.TryParse(input, out amount) || amount < 0)
     {
         DisplayText.InvalidAmount();
         DisplayText.StartingBalance();
         input = Console.ReadLine();
     }
-
     return amount;
 }
 
@@ -239,7 +239,7 @@ decimal GetMoneyAmount()
 {
     DisplayText.EnterDollarAmount();
     string? input = Console.ReadLine();
-    while (!Decimal.TryParse(input, out _))
+    while (!Decimal.TryParse(input, out decimal amount) || amount <= 0)
     {
         DisplayText.InvalidAmount();
         DisplayText.EnterDollarAmount();
