@@ -1,30 +1,26 @@
 using SimpleBankConsoleApp.Models;
-using SimpleBankConsoleApp.Utils;
 
 namespace SimpleBankConsoleApp.Controllers;
 
 public class BankController
 {
-    private BankModel Bank;
+    private readonly BankModel _bank;
 
-    public BankController()
+    private BankController(BankModel bank)
     {
-        Bank = new BankModel()
-        {
-            Accounts = new Dictionary<Guid, AccountController>()
-        };
+        _bank = bank;
     }
 
-    public Guid AddNewAccount(string first, string last, decimal balance)
+    public static BankController Create() => new (new BankModel());
+
+
+    public Guid CreateAccount(string first, string last, decimal balance)
     {
-        AccountController newAccount = AccountController.Create(first, last, balance, out Guid newId);
-        Bank.Accounts.Add(newId, newAccount);
+        var newAccount = AccountController.Create(first, last, balance, out var newId);
+        _bank.Accounts.Add(newId, newAccount);
         return newId;
     }
 
-    public AccountController RetrieveAccount(Guid id)
-    {
-        Bank.Accounts.TryGetValue(id, out AccountController account);
-        return account;
-    }
+    public AccountController RetrieveAccount(Guid id) => _bank[id];
+
 }
