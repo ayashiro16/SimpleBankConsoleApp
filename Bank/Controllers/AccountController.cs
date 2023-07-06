@@ -24,11 +24,6 @@ public class AccountController
         return new AccountController(account);
     }
 
-    public Guid GetAccountId()
-    {
-        return _account.Id;
-    }
-
     public decimal CheckBalance()
     {
         return _account.Balance;

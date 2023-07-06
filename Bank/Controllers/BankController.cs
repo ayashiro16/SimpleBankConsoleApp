@@ -27,13 +27,4 @@ public class BankController
         Bank.Accounts.TryGetValue(id, out AccountController account);
         return account;
     }
-
-    public AccountController DeleteAccount(Guid id)
-    {
-        if (Bank.Accounts.TryGetValue(id, out AccountController account))
-        {
-            Bank.Accounts.Remove(id);
-        }
-        return account;
-    }
 }
