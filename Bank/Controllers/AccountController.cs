@@ -26,28 +26,34 @@ public class AccountController
 
     public decimal CheckBalance() => _account.Balance;
 
-    public bool TryMakeDeposit(decimal amount, out decimal balance)
+    public decimal Deposit(decimal amount)
+    {
+        if (amount < 0)
+        {
+            throw new Exception("Cannot deposit a negative amount.");
+        }
+        _account.Balance += amount;
+        return _account.Balance;
+    }
+
+    public bool TryWithdraw(decimal amount)
     {
         if (amount <= 0)
         {
-            balance = _account.Balance;
-            return false;
+            throw new Exception("Cannot withdraw a negative amount.");
         }
-        _account.Balance += amount;
-        balance = _account.Balance;
-        return true;
-    }
-
-    public bool TryWithdraw(decimal amount, out decimal balance)
-    {
-        if (amount <= 0 || _account.Balance < amount)
+        if (_account.Balance < amount)
         {
-            balance = _account.Balance;
             return false;
         }
         _account.Balance -= amount;
-        balance = _account.Balance;
         return true;
+    }    
+    public bool TryWithdraw(decimal amount, out decimal balance)
+    {
+        var output = TryWithdraw(amount);
+        balance = _account.Balance;
+        return output;
     }
 
 }
