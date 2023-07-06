@@ -14,35 +14,6 @@ void Start()
     MainMenu();
 }
 
-// string OpenDialogue(Context context)
-// {
-//     Console.Write(); //TODO write the prompt according to the context
-//     string response = Console.ReadLine();
-//     return response;
-// }
-
-
-// this looks like it'll become a mess of switch statements. abandoning this method
-
-// void ProcessUserRequest(Context context, string response)
-// {
-//     switch (context)
-//     {
-//         case MainMenu:
-//             if (TextValidation.MenuSelection(response))
-//             {
-//                 switch (response)
-//                 {
-//                     
-//                 }
-//             }
-//             break;
-//         default:
-//             Console.WriteLine("Please make a valid selection.");
-//             break;
-//     }
-// }
-
 void MainMenu()
 {
     string selection;
