@@ -1,7 +1,5 @@
 ﻿// See https://aka.ms/new-console-template for more information
 
-using System.Net.Mime;
-using System.Runtime.CompilerServices;
 using SimpleBankConsoleApp.Controllers;
 using SimpleBankConsoleApp.Utils;
 
@@ -10,7 +8,7 @@ Start();
 
 void Start()
 {
-    bank = new BankController();
+    bank = BankController.Create();
     MainMenu();
 }
 
@@ -49,69 +47,72 @@ void MainMenu()
 
 void CreateAccount()
 {
-    string first = GetName("first");
-    string last = GetName("last");
-    decimal balance = GetStartingBalance();
-    Guid id = bank.AddNewAccount(first, last, balance);
+    var first = GetName("first");
+    var last = GetName("last");
+    var balance = GetStartingBalance();
+    var id = bank.CreateAccount(first, last, balance);
     DisplayText.AccountCreated(id);
 }
 
 void MakeDeposit()
 {
-    if (!GetAccountId(out Guid id))
+    if (!GetAccountId(out var id))
     {
         DisplayText.InvalidAccountId();
         return;
     }
-    decimal amount = GetMoneyAmount();
+    var amount = GetMoneyAmount();
     try
     {
-        bank.RetrieveAccount(id)?.MakeDeposit(amount);
+        if (bank.RetrieveAccount(id).TryMakeDeposit(amount, out var balance))
+        {
+            DisplayText.Success();
+            DisplayText.Balance(balance);
+        }
+        else
+        {
+            DisplayText.Failure();
+        }
     }
     catch
     {
         DisplayText.Failure();
-        return;
     }
-    DisplayText.Success();
 }
 
 void Withdraw()
 {
-    if (!GetAccountId(out Guid id))
+    if (!GetAccountId(out var id))
     {
         DisplayText.InvalidAccountId();
         return;
     }
-
-    decimal amount = GetMoneyAmount();
+    var amount = GetMoneyAmount();
     try
     {
-        decimal currBalance = bank.RetrieveAccount(id).CheckBalance();
-        if (amount > currBalance)
+        if (bank.RetrieveAccount(id).TryWithdraw(amount, out var balance))
+        {
+            DisplayText.Success();
+            DisplayText.Balance(balance);
+        }
+        else
         {
             DisplayText.Failure();
-            return;
         }
-
-        bank.RetrieveAccount(id).Withdraw(amount);
     }
     catch
     {
         DisplayText.Failure();
-        return;
     }
-    DisplayText.Success();
 }
 
 void CheckBalance()
 {
-    if (!GetAccountId(out Guid id))
+    if (!GetAccountId(out var id))
     {
         DisplayText.InvalidAccountId();
         return;
     }
-
     try
     {
         DisplayText.Balance(bank.RetrieveAccount(id).CheckBalance());
@@ -119,49 +120,49 @@ void CheckBalance()
     catch
     {
         DisplayText.Failure();
-        return;
     }
 }
 
 void TransferFunds()
 {
     Console.WriteLine("TRANSFER FROM");
-    if (!GetAccountId(out Guid id1))
+    if (!GetAccountId(out var id1))
     {
         DisplayText.InvalidAccountId();
         return;
     }
     Console.WriteLine("TRANSFER TO");
-    if (!GetAccountId(out Guid id2))
+    if (!GetAccountId(out var id2))
     {
         DisplayText.InvalidAccountId();
         return;
     }
-    decimal amount = GetMoneyAmount();
+    var amount = GetMoneyAmount();
     try
     {
-        decimal currBalance = bank.RetrieveAccount(id1).CheckBalance();
-        if (amount > currBalance)
+        bank.RetrieveAccount(id1);
+        bank.RetrieveAccount(id2);
+        if (bank.RetrieveAccount(id1).TryWithdraw(amount, out _))
+        {
+            bank.RetrieveAccount(id2).TryMakeDeposit(amount, out _);
+            DisplayText.Success();
+        }
+        else
         {
             DisplayText.Failure();
-            return;
         }
-
-        bank.RetrieveAccount(id1).Withdraw(amount);
-        bank.RetrieveAccount(id2).MakeDeposit(amount);
     }
     catch
     {
         DisplayText.Failure();
         return;
     }
-    DisplayText.Success();
 }
 
 string GetName(string firstOrLast)
 {
     DisplayText.EnterName(firstOrLast);
-    String name = Console.ReadLine();
+    var name = Console.ReadLine();
     while (!TextValidation.Name(name))
     {
         DisplayText.InvalidName();
@@ -175,8 +176,8 @@ decimal GetStartingBalance()
 {
     decimal amount;
     DisplayText.StartingBalance();
-    string? input = Console.ReadLine();
-    while (!Decimal.TryParse(input, out amount) || amount < 0)
+    var input = Console.ReadLine();
+    while (!decimal.TryParse(input, out amount) || amount < 0)
     {
         DisplayText.InvalidAmount();
         DisplayText.StartingBalance();
@@ -188,33 +189,32 @@ decimal GetStartingBalance()
 bool GetAccountId(out Guid id)
 {
     DisplayText.EnterAccountId();
-    string? input = Console.ReadLine();
+    var input = Console.ReadLine();
     return Guid.TryParse(input, out id);
 }
 
 string GetMenuSelection()
 {
     DisplayText.SelectFromMenu();
-    string? input = Console.ReadLine();
+    var input = Console.ReadLine();
     while (!TextValidation.MenuSelection(input))
     {
         DisplayText.InvalidMenuChoice();
         DisplayText.SelectFromMenu();
         input = Console.ReadLine();
     }
-
     return input;
 }
 
 decimal GetMoneyAmount()
 {
     DisplayText.EnterDollarAmount();
-    string? input = Console.ReadLine();
-    while (!Decimal.TryParse(input, out decimal amount) || amount <= 0)
+    var input = Console.ReadLine();
+    while (!decimal.TryParse(input, out var amount))
     {
         DisplayText.InvalidAmount();
         DisplayText.EnterDollarAmount();
         input = Console.ReadLine();
     }
-    return Decimal.Parse(input);
+    return decimal.Parse(input);
 }
