@@ -46,6 +46,11 @@ public static class DisplayText
         Console.WriteLine($"Your account has been created. \n Your ID is {id}");
     }
 
+    public static void Balance(decimal balance)
+    {
+        Console.WriteLine($"Your current balance is {Math.Truncate((balance * 100) / 100)}");
+    }
+
     public static void InvalidAmount()
     {
         Console.WriteLine("Invalid amount.");
@@ -75,4 +80,4 @@ public static class DisplayText
     {
         Console.WriteLine("Task successfully completed.");
     }
-}
+}  
