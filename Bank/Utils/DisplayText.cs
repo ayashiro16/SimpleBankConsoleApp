@@ -69,7 +69,12 @@ public static class DisplayText
 
     public static void InvalidAccountId()
     {
-        Console.WriteLine("Could not find account.");
+        Console.WriteLine("Invalid account ID.");
+    }
+
+    public static void AccountNotFound()
+    {
+        Console.WriteLine("Could not find an account associated with that ID.");
     }
 
     public static void Failure()
