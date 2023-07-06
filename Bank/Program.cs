@@ -25,7 +25,7 @@ void MainMenu()
                 CreateAccount();
                 break;
             case "2":
-                MakeDeposit();
+                Deposit();
                 break;
             case "3":
                 Withdraw();
@@ -41,8 +41,6 @@ void MainMenu()
                 break;
         }
     } while (selection != "6");
-
-
 }
 
 void CreateAccount()
@@ -54,25 +52,24 @@ void CreateAccount()
     DisplayText.AccountCreated(id);
 }
 
-void MakeDeposit()
+void Deposit()
 {
     if (!GetAccountId(out var id))
     {
         DisplayText.InvalidAccountId();
         return;
     }
-    var amount = GetMoneyAmount();
     try
     {
-        if (bank.RetrieveAccount(id).TryMakeDeposit(amount, out var balance))
-        {
-            DisplayText.Success();
-            DisplayText.Balance(balance);
-        }
-        else
-        {
-            DisplayText.Failure();
-        }
+        var account = bank.RetrieveAccount(id);
+        var amount = GetMoneyAmount();
+        var balance = account.Deposit(amount);
+        DisplayText.Success();
+        DisplayText.Balance(balance);
+    }
+    catch (KeyNotFoundException)
+    {
+        DisplayText.AccountNotFound();
     }
     catch
     {
@@ -87,10 +84,11 @@ void Withdraw()
         DisplayText.InvalidAccountId();
         return;
     }
-    var amount = GetMoneyAmount();
     try
     {
-        if (bank.RetrieveAccount(id).TryWithdraw(amount, out var balance))
+        var account = bank.RetrieveAccount(id);
+        var amount = GetMoneyAmount();
+        if (account.TryWithdraw(amount, out var balance))
         {
             DisplayText.Success();
             DisplayText.Balance(balance);
@@ -100,7 +98,11 @@ void Withdraw()
             DisplayText.Failure();
         }
     }
-    catch
+    catch (KeyNotFoundException)
+    {
+        DisplayText.AccountNotFound();
+    }
+    catch (Exception)
     {
         DisplayText.Failure();
     }
@@ -116,6 +118,10 @@ void CheckBalance()
     try
     {
         DisplayText.Balance(bank.RetrieveAccount(id).CheckBalance());
+    }
+    catch (KeyNotFoundException)
+    {
+        DisplayText.AccountNotFound();
     }
     catch
     {
@@ -140,11 +146,9 @@ void TransferFunds()
     var amount = GetMoneyAmount();
     try
     {
-        bank.RetrieveAccount(id1);
-        bank.RetrieveAccount(id2);
-        if (bank.RetrieveAccount(id1).TryWithdraw(amount, out _))
+        if (bank.RetrieveAccount(id1)?.TryWithdraw(amount) ?? false)
         {
-            bank.RetrieveAccount(id2).TryMakeDeposit(amount, out _);
+            bank.RetrieveAccount(id2).Deposit(amount);
             DisplayText.Success();
         }
         else
@@ -152,38 +156,42 @@ void TransferFunds()
             DisplayText.Failure();
         }
     }
+    catch (KeyNotFoundException)
+    {
+        DisplayText.AccountNotFound();
+    }
     catch
     {
         DisplayText.Failure();
-        return;
     }
 }
 
 string GetName(string firstOrLast)
 {
-    DisplayText.EnterName(firstOrLast);
-    var name = Console.ReadLine();
-    while (!TextValidation.Name(name))
+    while (true)
     {
-        DisplayText.InvalidName();
         DisplayText.EnterName(firstOrLast);
-        name = Console.ReadLine();
+        var name = Console.ReadLine();
+        if (TextValidation.Name(name))
+        {
+            return name;
+        }
+        DisplayText.InvalidName();
     }
-    return name;
 }
 
 decimal GetStartingBalance()
 {
-    decimal amount;
-    DisplayText.StartingBalance();
-    var input = Console.ReadLine();
-    while (!decimal.TryParse(input, out amount) || amount < 0)
+    while (true)
     {
-        DisplayText.InvalidAmount();
         DisplayText.StartingBalance();
-        input = Console.ReadLine();
+        var input = Console.ReadLine();
+        if (decimal.TryParse(input, out var amount) && amount >= 0)
+        {
+            return amount;
+        }
+        DisplayText.InvalidAmount();
     }
-    return amount;
 }
 
 bool GetAccountId(out Guid id)
@@ -195,26 +203,28 @@ bool GetAccountId(out Guid id)
 
 string GetMenuSelection()
 {
-    DisplayText.SelectFromMenu();
-    var input = Console.ReadLine();
-    while (!TextValidation.MenuSelection(input))
+    while (true)
     {
-        DisplayText.InvalidMenuChoice();
         DisplayText.SelectFromMenu();
-        input = Console.ReadLine();
+        var input = Console.ReadLine();
+        if (TextValidation.MenuSelection(input))
+        {
+            return input;
+        }
+        DisplayText.InvalidMenuChoice();
     }
-    return input;
 }
 
 decimal GetMoneyAmount()
 {
-    DisplayText.EnterDollarAmount();
-    var input = Console.ReadLine();
-    while (!decimal.TryParse(input, out var amount))
+    while (true)
     {
-        DisplayText.InvalidAmount();
         DisplayText.EnterDollarAmount();
-        input = Console.ReadLine();
+        var input = Console.ReadLine();
+        if (decimal.TryParse(input, out var amount))
+        {
+            return amount;
+        }
+        DisplayText.InvalidAmount();
     }
-    return decimal.Parse(input);
 }
