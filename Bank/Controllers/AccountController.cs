@@ -4,9 +4,9 @@ namespace SimpleBankConsoleApp.Controllers;
 
 public class AccountController
 {
-    protected readonly AccountModel _account;
+    private readonly AccountModel _account;
 
-    public AccountController(AccountModel account)
+    private AccountController(AccountModel account)
     {
         _account = account;
     }
@@ -24,21 +24,30 @@ public class AccountController
         return new AccountController(account);
     }
 
-    public decimal CheckBalance()
-    {
-        return _account.Balance;
-    }
+    public decimal CheckBalance() => _account.Balance;
 
-    public decimal MakeDeposit(decimal amount)
+    public bool TryMakeDeposit(decimal amount, out decimal balance)
     {
+        if (amount <= 0)
+        {
+            balance = _account.Balance;
+            return false;
+        }
         _account.Balance += amount;
-        return _account.Balance;
+        balance = _account.Balance;
+        return true;
     }
 
-    public decimal Withdraw(decimal amount)
+    public bool TryWithdraw(decimal amount, out decimal balance)
     {
+        if (amount <= 0 || _account.Balance < amount)
+        {
+            balance = _account.Balance;
+            return false;
+        }
         _account.Balance -= amount;
-        return _account.Balance;
+        balance = _account.Balance;
+        return true;
     }
 
 }
