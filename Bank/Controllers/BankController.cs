@@ -3,9 +3,17 @@ using SimpleBankConsoleApp.Utils;
 
 namespace SimpleBankConsoleApp.Controllers;
 
-public class BankController : Singleton<BankModel>
+public class BankController
 {
-    public BankModel Bank;
+    private BankModel Bank;
+
+    public BankController()
+    {
+        Bank = new BankModel()
+        {
+            Accounts = new Dictionary<Guid, AccountController>()
+        };
+    }
 
     public Guid AddNewAccount(string first, string last, decimal balance)
     {
