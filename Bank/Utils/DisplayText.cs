@@ -4,6 +4,7 @@ public static class DisplayText
 {
     public static void MainMenu()
     {
+        Console.WriteLine();
         Console.WriteLine("---------------------");
         Console.WriteLine("-----Simple Bank-----");
         Console.WriteLine("---------------------");
@@ -43,12 +44,12 @@ public static class DisplayText
 
     public static void AccountCreated(Guid id)
     {
-        Console.WriteLine($"Your account has been created. \n Your ID is {id}");
+        Console.WriteLine($"Your account has been created. \nYour ID is {id}");
     }
 
     public static void Balance(decimal balance)
     {
-        Console.WriteLine($"Your current balance is {Math.Truncate((balance * 100) / 100)}");
+        Console.WriteLine($"Your balance is {balance:F}");
     }
 
     public static void InvalidAmount()
