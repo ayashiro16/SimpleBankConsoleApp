@@ -13,7 +13,7 @@ public static class DisplayText
         Console.WriteLine("3. Withdraw");
         Console.WriteLine("4. Check Balance");
         Console.WriteLine("5. Transfer Funds");
-        Console.WriteLine("9. Exit Application");
+        Console.WriteLine("6. Exit Application");
     }
 
     public static void SelectFromMenu()
@@ -79,5 +79,10 @@ public static class DisplayText
     public static void Success()
     {
         Console.WriteLine("Task successfully completed.");
+    }
+
+    public static void Exit()
+    {
+        Console.WriteLine("Thank you for using Simple Bank!");
     }
 }  
