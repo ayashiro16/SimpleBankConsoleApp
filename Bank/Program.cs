@@ -4,43 +4,36 @@ using SimpleBankConsoleApp.Controllers;
 using SimpleBankConsoleApp.Utils;
 
 BankController bank;
+Action[] menuActions;
 Start();
 
 void Start()
 {
     bank = BankController.Create();
+    menuActions = new[]
+    {
+        CreateAccount, Deposit, Withdraw, CheckBalance, TransferFunds, Exit
+    };
     MainMenu();
 }
 
 void MainMenu()
 {
-    string selection;
-    do
+    while (true)
     {
         DisplayText.MainMenu();
-        selection = GetMenuSelection();
-        switch (selection)
+        var selection = GetMenuSelection();
+        if (selection > menuActions.Length || selection <=0)
         {
-            case "1":
-                CreateAccount();
-                break;
-            case "2":
-                Deposit();
-                break;
-            case "3":
-                Withdraw();
-                break;
-            case "4":
-                CheckBalance();
-                break;
-            case "5":
-                TransferFunds();
-                break;
-            case "6":
-                DisplayText.Exit();
-                break;
+            DisplayText.InvalidMenuChoice();
+            continue;
         }
-    } while (selection != "6");
+        menuActions[selection - 1]();
+        if (selection == 6)
+        {
+            break;
+        }
+    }
 }
 
 void CreateAccount()
@@ -166,13 +159,18 @@ void TransferFunds()
     }
 }
 
+void Exit()
+{
+    DisplayText.Exit();
+}
+
 string GetName(string firstOrLast)
 {
     while (true)
     {
         DisplayText.EnterName(firstOrLast);
         var name = Console.ReadLine();
-        if (TextValidation.Name(name))
+        if (!string.IsNullOrEmpty(name) && name.All(char.IsLetter))
         {
             return name;
         }
@@ -201,15 +199,15 @@ bool GetAccountId(out Guid id)
     return Guid.TryParse(input, out id);
 }
 
-string GetMenuSelection()
+int GetMenuSelection()
 {
     while (true)
     {
         DisplayText.SelectFromMenu();
         var input = Console.ReadLine();
-        if (TextValidation.MenuSelection(input))
+        if (int.TryParse(input, out var selection))
         {
-            return input;
+            return selection;
         }
         DisplayText.InvalidMenuChoice();
     }
