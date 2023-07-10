@@ -1,8 +1,9 @@
-using SimpleBankConsoleApp.Models;
+using IAccountController = SimpleBankConsoleApp.Interfaces.IAccountController;
+using AccountModel = SimpleBankConsoleApp.Models.AccountModel;
 
 namespace SimpleBankConsoleApp.Controllers;
 
-public class AccountController
+public class AccountController: IAccountController
 {
     private readonly AccountModel _account;
 
@@ -11,7 +12,7 @@ public class AccountController
         _account = account;
     }
 
-    public static AccountController Create(string first, string last, decimal balance, out Guid id)
+    public static IAccountController Create(string first, string last, decimal balance, out Guid id)
     {
         var account = new AccountModel()
         {

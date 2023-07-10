@@ -1,8 +1,10 @@
-using SimpleBankConsoleApp.Models;
+using IAccountController = SimpleBankConsoleApp.Interfaces.IAccountController;
+using IBankController = SimpleBankConsoleApp.Interfaces.IBankController;
+using BankModel = SimpleBankConsoleApp.Models.BankModel;
 
 namespace SimpleBankConsoleApp.Controllers;
 
-public class BankController
+public class BankController : IBankController
 {
     private readonly BankModel _bank;
 
@@ -21,6 +23,8 @@ public class BankController
         return newId;
     }
 
-    public AccountController RetrieveAccount(Guid id) => _bank[id];
+    public IAccountController? RetrieveAccount(Guid id) => _bank.Accounts.TryGetValue(id, out var account)
+        ? account
+        : null;
 
 }

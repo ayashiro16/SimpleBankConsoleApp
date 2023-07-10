@@ -1,10 +1,8 @@
-using SimpleBankConsoleApp.Controllers;
+using IAccountController = SimpleBankConsoleApp.Interfaces.IAccountController;
 
 namespace SimpleBankConsoleApp.Models;
 
 public class BankModel
 {
-    public Dictionary<Guid, AccountController> Accounts { get; } = new();
-    
-    public AccountController this[Guid key] => Accounts[key];
+    public Dictionary<Guid, IAccountController> Accounts { get; } = new();
 }

@@ -1,9 +1,10 @@
+using SimpleBankConsoleApp.Interfaces;
 using BankController = SimpleBankConsoleApp.Controllers.BankController;
 using DisplayText = SimpleBankConsoleApp.Utils.DisplayText;
 
 namespace SimpleBankConsoleApp.Views;
 
-public class BankView
+public class BankView : IBankView
 {
     private readonly BankController _bank;
 
