@@ -1,4 +1,4 @@
-using SimpleBankConsoleApp.Interfaces;
+using IBankView = SimpleBankConsoleApp.Interfaces.IBankView;
 using BankController = SimpleBankConsoleApp.Controllers.BankController;
 using DisplayText = SimpleBankConsoleApp.Utils.DisplayText;
 
